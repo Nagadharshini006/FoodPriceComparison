@@ -4,11 +4,18 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 require('dotenv').config();
+
 const db = require('./db');
 const { authenticate, adminOnly } = require('./middleware');
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+    origin: 'https://foodpricecomparison-frontend.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 const PORT = Number(process.env.PORT || 5000);
 const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
 

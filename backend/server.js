@@ -2,11 +2,13 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 require('dotenv').config();
 const db = require('./db');
 const { authenticate, adminOnly } = require('./middleware');
 
 const app = express();
+app.use(cors());
 const PORT = Number(process.env.PORT || 5000);
 const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
 

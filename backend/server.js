@@ -333,8 +333,11 @@ app.get('/api/admin/stats', authenticate, adminOnly, async (req, res) => {
   } catch (err) { res.status(500).json({ message: 'Could not load statistics', error: err.message }); }
 });
 
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, '..', 'frontend', 'login-simple.html')));
-
+app.use((req, res) => {
+  res.status(404).json({
+    message: 'API route not found'
+  });
+});
 // Make sure comparisons.is_favorite exists (used by the saved/favourite routes).
 // Safe to run every start: it only adds the column if missing and never
 // changes or removes existing rows.

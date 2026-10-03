@@ -1,0 +1,15 @@
+backend/node_modules/
+backend/.env
+backend/.env.*
+!.env.example
+
+node_modules/
+.env
+.env.*
+!.env.example
+
+.vscode/
+.idea/
+
+*.log
+npm-debug.log*

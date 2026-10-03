@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Saved Comparisons</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f6fa;
+        color: #222;
+    }
+
+    .header {
+        background: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .back-btn {
+        border: none;
+        background: #222;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .container {
+        max-width: 1100px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .page-title {
+        margin-bottom: 20px;
+    }
+
+    .page-title h2 {
+        font-size: 28px;
+        margin-bottom: 6px;
+    }
+
+    .page-title p {
+        color: #666;
+    }
+
+    #savedList {
+        display: grid;
+        gap: 20px;
+    }
+
+    .saved-card {
+        background: white;
+        border-radius: 14px;
+        padding: 22px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .food-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .location {
+        color: #666;
+        margin-bottom: 18px;
+    }
+
+    .platforms {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .platform {
+        padding: 16px;
+        border-radius: 10px;
+        background: #f8f8f8;
+    }
+
+    .platform h3 {
+        margin-bottom: 12px;
+    }
+
+    .platform p {
+        margin: 7px 0;
+    }
+
+    .winner {
+        margin-top: 18px;
+        padding: 12px;
+        background: #fff3cd;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+
+    .date {
+        margin-top: 12px;
+        color: #888;
+        font-size: 13px;
+    }
+
+    .remove-btn {
+        margin-top: 15px;
+        border: none;
+        background: #e74c3c;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .remove-btn:hover {
+        background: #c0392b;
+    }
+
+    .empty {
+        background: white;
+        padding: 50px 20px;
+        text-align: center;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .empty-icon {
+        font-size: 50px;
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 700px) {
+
+        .platforms {
+            grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+            font-size: 20px;
+        }
+    }
+</style>
+
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+    <h1>❤️ Saved Comparisons</h1>
+
+    <button class="back-btn" onclick="goHome()">
+        ← Home
+    </button>
+
+</div>
+
+
+<div class="container">
+
+    <div class="page-title">
+
+        <h2>Your Saved Comparisons</h2>
+
+        <p>
+            Comparisons you saved from the food comparison page.
+        </p>
+
+    </div>
+
+
+    <div id="savedList"></div>
+
+</div>
+
+
+<script>
+
+    // ==========================================
+    // CHECK LOGIN
+    // ==========================================
+
+    const authToken =
+        localStorage.getItem('authToken');
+
+    if (!authToken) {
+
+        window.location.replace(
+            'login-simple.html'
+        );
+
+    }
+
+
+    // ==========================================
+    // LOAD SAVED COMPARISONS
+    // ==========================================
+
+    // Saved comparisons of the CURRENT logged-in user (from the backend).
+    // The server filters by the user id inside the login token.
+    let savedItems = [];
+
+    async function loadSavedComparisons() {
+
+        const savedList =
+            document.getElementById('savedList');
+
+
+        let saved = [];
+
+        try {
+
+            const response =
+                await fetch(
+                    '/api/comparisons/saved',
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Authorization':
+                                'Bearer ' +
+                                localStorage.getItem('authToken')
+                        }
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                    'Could not load saved comparisons'
+                );
+            }
+
+            saved = data;
+
+        } catch (error) {
+
+            savedList.innerHTML = `
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        ❌
+                    </div>
+
+                    <h3>
+                        Could not load saved comparisons
+                    </h3>
+
+                    <p style="margin-top:10px;color:#666;">
+                        ${error.message}
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+        savedItems = saved;
+
+
+        // ==========================================
+        // NO SAVED DATA
+        // ==========================================
+
+        if (!Array.isArray(saved) || saved.length === 0) {
+
+            savedList.innerHTML = `
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        ❤️
+                    </div>
+
+                    <h3>
+                        No Saved Comparisons
+                    </h3>
+
+                    <p style="margin-top:10px;color:#666;">
+                        Save a comparison from the home page
+                        and it will appear here.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // DISPLAY SAVED DATA
+        // ==========================================
+
+        savedList.innerHTML = '';
+
+
+        saved.forEach(function(item, index) {
+
+            const card =
+                document.createElement('div');
+
+            card.className =
+                'saved-card';
+
+
+            const foodName =
+                item.foodName ||
+                item.food ||
+                'Unknown Food';
+
+
+            const location =
+                { area: item.area, city: item.city, state: item.state };
+
+
+            const zomato =
+                { restaurant: item.zomatoRestaurant, price: (item.zomatoPrice != null ? Number(item.zomatoPrice) : undefined), rating: item.zomatoRating, deliveryTime: item.zomatoDelivery };
+
+
+            const swiggy =
+                { restaurant: item.swiggyRestaurant, price: (item.swiggyPrice != null ? Number(item.swiggyPrice) : undefined), rating: item.swiggyRating, deliveryTime: item.swiggyDelivery };
+
+
+            const winner =
+    item.winner
+        ? item.winner.charAt(0).toUpperCase() +
+          item.winner.slice(1)
+        : calculateSavedWinner(item);
+
+
+            const savedDate =
+                item.savedAt ||
+                item.createdAt ||
+                null;
+
+
+            card.innerHTML = `
+
+                <div class="food-title">
+
+                    🍽️
+                    ${capitalize(foodName)}
+
+                </div>
+
+
+                <div class="location">
+
+                    📍
+                    ${location.area || '-'},
+                    ${location.city || '-'},
+                    ${location.state || '-'}
+
+                </div>
+
+
+                <div class="platforms">
+
+
+                    <!-- ZOMATO -->
+
+                    <div class="platform">
+
+                        <h3>
+                            🔴 Zomato
+                        </h3>
+
+                        <p>
+
+                            <strong>
+                                Restaurant:
+                            </strong>
+
+                            ${zomato.restaurant || '-'}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Price:
+                            </strong>
+
+                            ₹${zomato.price ?? '-'}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Rating:
+                            </strong>
+
+                            ⭐${zomato.rating ?? '-'}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Delivery:
+                            </strong>
+
+                            ${zomato.deliveryTime ?? '-'} min
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Reviews:
+                            </strong>
+
+                            ${zomato.reviews ?? '-'}
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- SWIGGY -->
+
+                    <div class="platform">
+
+                        <h3>
+                            🟠 Swiggy
+                        </h3>
+
+
+                        <p>
+
+                            <strong>
+                                Restaurant:
+                            </strong>
+
+                            ${swiggy.restaurant || '-'}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Price:
+                            </strong>
+
+                            ₹${swiggy.price ?? '-'}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Rating:
+                            </strong>
+
+                            ⭐${swiggy.rating ?? '-'}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Delivery:
+                            </strong>
+
+                            ${swiggy.deliveryTime ?? '-'} min
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Reviews:
+                            </strong>
+
+                            ${swiggy.reviews ?? '-'}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="winner">
+
+                    🏆 Better Overall:
+                    ${capitalize(winner)}
+
+                </div>
+
+
+                <div class="date">
+
+                    Saved on:
+                    ${formatDate(savedDate)}
+
+                </div>
+
+
+                <button
+                    class="remove-btn"
+                    onclick="removeSaved(${index})"
+                >
+
+                    🗑️ Remove Saved
+
+                </button>
+
+            `;
+
+
+            savedList.appendChild(card);
+
+        });
+
+    }
+
+
+    // ==========================================
+    // REMOVE ONE SAVED COMPARISON
+    // ==========================================
+
+    async function removeSaved(index) {
+
+        const item = savedItems[index];
+
+        if (!item) {
+            alert('Saved comparison not found.');
+            return;
+        }
+
+        const confirmDelete =
+            confirm(
+                'Remove "' +
+                (item.foodName || 'this comparison') +
+                '" from saved comparisons?'
+            );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+
+            // The server only updates rows where user_id = the logged-in user
+            const response =
+                await fetch(
+                    '/api/comparisons/' + item.id + '/favorite',
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization':
+                                'Bearer ' +
+                                localStorage.getItem('authToken')
+                        },
+                        body: JSON.stringify({ isFavorite: false })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                    'Could not remove saved comparison'
+                );
+            }
+
+            // Refresh the list immediately
+            await loadSavedComparisons();
+
+        } catch (error) {
+
+            alert(error.message);
+        }
+    }
+
+
+
+    // ==========================================
+    // CAPITALIZE
+    // ==========================================
+function calculateSavedWinner(item) {
+
+    const zomatoRating =
+        Number(item.zomatoRating || 0);
+
+    const swiggyRating =
+        Number(item.swiggyRating || 0);
+
+    const zomatoPrice =
+        Number(item.zomatoPrice || 0);
+
+    const swiggyPrice =
+        Number(item.swiggyPrice || 0);
+
+
+    function getQuality(rating) {
+
+        if (rating >= 4.4) {
+            return 'best';
+        }
+
+        if (rating >= 4.0) {
+            return 'good';
+        }
+
+        return 'average';
+    }
+
+
+    function getScore(rating, price) {
+
+        const quality =
+            getQuality(rating);
+
+        let qualityScore = 0;
+
+        if (quality === 'best') {
+            qualityScore = 0.3;
+        }
+        else if (quality === 'good') {
+            qualityScore = 0.15;
+        }
+
+        return (
+            (rating * 0.4) +
+            ((500 - price) / 500 * 0.3) +
+            qualityScore
+        );
+    }
+
+
+    const zomatoScore =
+        getScore(
+            zomatoRating,
+            zomatoPrice
+        );
+
+
+    const swiggyScore =
+        getScore(
+            swiggyRating,
+            swiggyPrice
+        );
+
+
+    if (zomatoScore > swiggyScore) {
+        return 'Zomato';
+    }
+
+    return 'Swiggy';
+}
+    function capitalize(text) {
+
+        if (!text) {
+            return '';
+        }
+
+
+        return String(text)
+            .split(' ')
+            .map(function(word) {
+
+                return (
+                    word.charAt(0).toUpperCase() +
+                    word.slice(1)
+                );
+
+            })
+            .join(' ');
+
+    }
+
+
+    // ==========================================
+    // DATE FORMAT
+    // ==========================================
+
+    function formatDate(dateString) {
+
+        if (!dateString) {
+            return '-';
+        }
+
+
+        const date =
+            new Date(dateString);
+
+
+        if (isNaN(date.getTime())) {
+            return '-';
+        }
+
+
+        return date.toLocaleString(
+            'en-IN',
+            {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+            }
+        );
+
+    }
+
+
+    // ==========================================
+    // HOME
+    // ==========================================
+
+    function goHome() {
+
+        window.location.href =
+            'food.html';
+
+    }
+
+
+    // ==========================================
+    // LOAD PAGE
+    // ==========================================
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        function() {
+
+            loadSavedComparisons();
+
+        }
+    );
+
+</script>
+
+
+</body>
+</html>

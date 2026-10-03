@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Food Price Comparator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+        }
+
+        .orders-container {
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .order-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .food-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .platform {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .zomato {
+            background: #ffe5e5;
+            color: #e23744;
+        }
+
+        .swiggy {
+            background: #fff0d5;
+            color: #e68a00;
+        }
+
+        .order-info {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .no-orders {
+            text-align: center;
+            background: white;
+            padding: 50px 20px;
+            border-radius: 15px;
+            color: #777;
+        }
+
+        .no-orders-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
+        /* Bottom Navigation */
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -3px 15px rgba(0,0,0,0.12);
+            z-index: 9999;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #777;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>📋 My Orders</h1>
+        <p>Your food order history</p>
+    </div>
+
+    <div class="orders-container" id="ordersContainer">
+        <div class="loading">
+            🔄 Loading your orders...
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+
+    <nav class="bottom-nav">
+
+        <button class="nav-item" onclick="goHome()">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </button>
+
+        <button class="nav-item active" onclick="goOrders()">
+            <span class="nav-icon">📋</span>
+            <span>Orders</span>
+        </button>
+
+        <button class="nav-item" onclick="goSaved()">
+            <span class="nav-icon">❤️</span>
+            <span>Saved</span>
+        </button>
+
+        <button class="nav-item" onclick="goProfile()">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </button>
+
+    </nav>
+
+    <script>
+        const API_BASE = 'https://smartfoodcomparebackend-production.up.railway.app/api';
+
+        function authHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            };
+        }
+
+        function goHome() {
+            window.location.href = 'food.html';
+        }
+
+        function goOrders() {
+            window.location.href = 'orders.html';
+        }
+
+        function goSaved() {
+            window.location.href = 'saved.html';
+        }
+
+        function goProfile() {
+            window.location.href = 'profile.html';
+        }
+
+        async function loadOrders() {
+
+            const container = document.getElementById('ordersContainer');
+
+            try {
+
+                const response = await fetch(
+                    API_BASE + '/orders/my',
+                    {
+                        headers: authHeaders()
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Could not load orders');
+                }
+
+                const orders = await response.json();
+
+                if (!orders || orders.length === 0) {
+
+                    container.innerHTML = `
+                        <div class="no-orders">
+                            <div class="no-orders-icon">🍽️</div>
+                            <h2>No Orders Yet</h2>
+                            <p>Your food orders will appear here.</p>
+                        </div>
+                    `;
+
+                    return;
+                }
+
+                container.innerHTML = orders.map(order => {
+
+                    const platformClass =
+                        order.platform.toLowerCase() === 'zomato'
+                            ? 'zomato'
+                            : 'swiggy';
+
+                    return `
+                        <div class="order-card">
+
+                            <div class="order-top">
+
+                                <div class="food-name">
+                                    🍴 ${order.foodItem}
+                                </div>
+
+                                <div class="platform ${platformClass}">
+                                    ${order.platform}
+                                </div>
+
+                            </div>
+
+                            <div class="order-info">
+
+                                🏪 <strong>${order.restaurant}</strong>
+                                <br>
+
+                                📍 ${order.location}
+                                <br>
+
+                                💰 <span class="price">
+                                    ₹${order.price}
+                                </span>
+                                <br>
+
+                                ⭐ ${order.rating}/5
+                                <br>
+
+                                🚚 ${order.deliveryTime} minutes
+
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join('');
+
+            } catch (error) {
+
+                console.error(error);
+
+                container.innerHTML = `
+                    <div class="no-orders">
+                        <div class="no-orders-icon">⚠️</div>
+                        <h2>Could not load orders</h2>
+                        <p>Please login again and try.</p>
+                    </div>
+                `;
+            }
+        }
+
+        loadOrders();
+    </script>
+
+</body>
+</html>

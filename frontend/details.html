@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Details - Food Comparator</title>
+    <link rel="stylesheet" href="details.css">
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="goBack()">← Back to Search</button>
+        
+        <div class="header">
+            <h1 id="foodTitle">Food Details</h1>
+            <p id="locationInfo">Location Info</p>
+        </div>
+
+        <div class="details-container">
+            <!-- Zomato Card -->
+            <div class="detail-card zomato">
+                <div class="card-header">
+                    <div class="platform-logo">Z</div>
+                    <h2>Zomato</h2>
+                </div>
+                
+                <div class="restaurant-info">
+                    <h3 id="zomatoRestaurant">Restaurant Name</h3>
+                    <p id="zomatoArea">Area</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">⭐ Rating</span>
+                        <span class="value" id="zomatoRating">4.5</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">💰 Price</span>
+                        <span class="value price" id="zomatoPrice">₹350</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">🏆 Quality</span>
+                        <span class="value" id="zomatoQuality">Best</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">🚚 Delivery</span>
+                        <span class="value" id="zomatoDelivery">35 min</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">📝 Reviews</span>
+                        <span class="value" id="zomatoReviews">2,500</span>
+                    </div>
+                </div>
+
+                <button class="order-btn zomato-btn" onclick="orderFrom('zomato')">
+                    🛒 Order from Zomato
+                </button>
+            </div>
+
+            <!-- Swiggy Card -->
+            <div class="detail-card swiggy">
+                <div class="card-header">
+                    <div class="platform-logo">S</div>
+                    <h2>Swiggy</h2>
+                </div>
+                
+                <div class="restaurant-info">
+                    <h3 id="swiggyRestaurant">Restaurant Name</h3>
+                    <p id="swiggyArea">Area</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">⭐ Rating</span>
+                        <span class="value" id="swiggyRating">4.3</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">💰 Price</span>
+                        <span class="value price" id="swiggyPrice">₹320</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">🏆 Quality</span>
+                        <span class="value" id="swiggyQuality">Good</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">🚚 Delivery</span>
+                        <span class="value" id="swiggyDelivery">30 min</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">📝 Reviews</span>
+                        <span class="value" id="swiggyReviews">1,800</span>
+                    </div>
+                </div>
+
+                <button class="order-btn swiggy-btn" onclick="orderFrom('swiggy')">
+                    🛒 Order from Swiggy
+                </button>
+            </div>
+        </div>
+
+        <div class="winner-section" id="winnerSection">
+            <div class="winner-badge">🏆</div>
+            <h2 id="winnerTitle">Best Deal</h2>
+            <p id="winnerReason">Better price and quality</p>
+        </div>
+    </div>
+
+    <script src="details.js"></script>
+</body>
+</html>

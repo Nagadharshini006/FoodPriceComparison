@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Food Comparator</title>
+    <link rel="stylesheet" href="admin-panel.css">
+</head>
+<body>
+    <div class="admin-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>🔐 Admin Panel</h1>
+                <p class="header-subtitle">Food Price Comparator - Order Management</p>
+            </div>
+            <div class="header-right">
+                <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh</button>
+                <button class="logout-btn" onclick="adminLogout()">Logout 🚪</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-value" id="totalOrders">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🍕</div>
+                <div class="stat-info">
+                    <div class="stat-label">Zomato Orders</div>
+                    <div class="stat-value" id="zomatoOrders">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🍔</div>
+                <div class="stat-info">
+                    <div class="stat-label">Swiggy Orders</div>
+                    <div class="stat-value" id="swiggyOrders">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-section">
+            <h2>Order Management</h2>
+            <div class="action-buttons">
+                <button class="action-btn download-btn" onclick="downloadCSV()">
+                    📥 Download All Orders (CSV)
+                </button>
+                <button class="action-btn clear-btn" onclick="clearAllOrders()">
+                    🗑️ Clear All Orders
+                </button>
+            </div>
+        </div>
+
+        <div class="orders-section">
+            <div class="section-header">
+                <h2>Recent Orders</h2>
+                <div class="filter-controls">
+                    <select id="platformFilter" onchange="filterOrders()">
+                        <option value="all">All Platforms</option>
+                        <option value="zomato">Zomato Only</option>
+                        <option value="swiggy">Swiggy Only</option>
+                    </select>
+                    <input type="text" id="searchUser" placeholder="Search by user email..." oninput="filterOrders()">
+                </div>
+            </div>
+
+            <div class="orders-table-container">
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Order ID</th>
+                            <th>User Email</th>
+                            <th>Food Item</th>
+                            <th>Platform</th>
+                            <th>Price</th>
+                            <th>Location</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr>
+                            <td colspan="8" class="no-data">No orders found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-panel.js"></script>
+</body>
+</html>

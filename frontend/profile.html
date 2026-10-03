@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile - Food Price Comparator</title>
+
+    <link rel="stylesheet" href="profile.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="profile-header">
+
+        <button class="back-btn" onclick="goHome()">
+            ← Home
+        </button>
+
+        <h1>👤 My Profile</h1>
+
+    </header>
+
+
+    <!-- PROFILE -->
+    <main class="profile-container">
+
+        <!-- PROFILE INTRO -->
+        <div class="profile-intro">
+            <div class="profile-icon">👤</div>
+
+            <h2>My Account</h2>
+
+            <p>Welcome back, food lover! 🍽️</p>
+        </div>
+
+
+        <!-- EMAIL -->
+        <div class="profile-item">
+
+            <div class="item-icon">
+                📧
+            </div>
+
+            <div class="item-content">
+
+                <span class="item-label">
+                    Email
+                </span>
+
+                <span class="item-value" id="userEmail">
+                    Loading...
+                </span>
+
+            </div>
+
+        </div>
+
+
+        
+<!-- LOCATION -->
+<div class="profile-item location-item">
+
+    <div class="item-icon">
+        📍
+    </div>
+
+    <div class="item-content">
+
+        <span class="item-label">
+            Selected Location
+        </span>
+
+        <span class="item-value" id="userLocation">
+            No location selected
+        </span>
+
+    </div>
+
+    <button class="edit-location-btn" onclick="showLocationEditor()">
+        ✏️ Edit
+    </button>
+
+</div>
+
+
+<!-- LOCATION EDITOR -->
+<div class="location-editor" id="locationEditor">
+
+    <h3>📍 Change Location</h3>
+
+    <select id="profileState" onchange="updateProfileCities()">
+        <option value="">Select State</option>
+    </select>
+
+    <select id="profileCity" onchange="updateProfileAreas()" disabled>
+        <option value="">Select City</option>
+    </select>
+
+    <select id="profileArea" disabled>
+        <option value="">Select Area</option>
+    </select>
+
+    <div class="location-editor-buttons">
+
+        <button class="save-location-btn" onclick="saveProfileLocation()">
+            Save Location
+        </button>
+
+        <button class="cancel-location-btn" onclick="hideLocationEditor()">
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+
+
+        <!-- ORDERS -->
+        <div class="profile-item">
+
+            <div class="item-icon">
+                🛒
+            </div>
+
+            <div class="item-content">
+
+                <span class="item-label">
+                    Orders Placed
+                </span>
+
+                <span class="item-value" id="orderCount">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- LOGOUT -->
+        <button class="logout-btn" onclick="logout()">
+            🚪 Logout
+        </button>
+
+    </main>
+
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+
+        <button class="nav-item" onclick="goHome()">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </button>
+
+        <button class="nav-item" onclick="goOrders()">
+            <span class="nav-icon">📋</span>
+            <span>Orders</span>
+        </button>
+
+        <button class="nav-item" onclick="goSaved()">
+            <span class="nav-icon">❤️</span>
+            <span>Saved</span>
+        </button>
+
+        <button class="nav-item active" onclick="goProfile()">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </button>
+
+    </nav>
+
+
+    <script src="profile.js"></script>
+
+</body>
+</html>
+

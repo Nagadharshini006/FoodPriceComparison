@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Food Price Comparator - Zomato vs Swiggy</title>
+
+<link rel="stylesheet" href="food.css">
+
+<style>
+    .logout-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+        border-radius: 25px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .logout-btn:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    #userEmail {
+        font-size: 0.9em;
+        opacity: 0.8;
+    }
+
+    /* ================================
+       FOOD SEARCH SUGGESTIONS
+       ================================ */
+
+    .search-box {
+        position: relative;
+    }
+
+    .food-suggestions {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        right: 120px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        z-index: 50;
+        display: none;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .food-suggestion-item {
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s ease;
+        font-size: 15px;
+    }
+
+    .food-suggestion-item:last-child {
+        border-bottom: none;
+    }
+
+    .food-suggestion-item:hover {
+        background: #f3f4ff;
+    }
+
+    .food-suggestion-icon {
+        margin-right: 8px;
+    }
+
+    @media (max-width: 700px) {
+        .food-suggestions {
+            right: 0;
+        }
+    }
+</style>
+
+
+</head>
+
+<body>
+
+
+<!-- ================================
+     LOGOUT
+     ================================ -->
+
+<div class="logout-btn" style="cursor: default; pointer-events: none;">
+    <span id="userEmail"></span>
+</div>
+
+
+<div class="container">
+
+    <!-- ================================
+         HEADER
+         ================================ -->
+
+    <header>
+        <h1>🍽️ Food Price Comparator</h1>
+
+        <p class="subtitle">
+            Compare food prices and ratings between Zomato & Swiggy
+        </p>
+    </header>
+
+
+    <!-- ================================
+         SEARCH SECTION
+         ================================ -->
+
+    <div class="search-section">
+
+
+        <!-- LOCATION -->
+
+        <div class="location-section">
+
+            <div class="location-title">
+                📍 Select Your Location
+            </div>
+
+
+            <div class="location-dropdowns">
+
+                <div class="dropdown-group">
+
+                    <label class="dropdown-label">
+                        State
+                    </label>
+
+                    <select
+                        id="stateSelect"
+                        class="dropdown-select"
+                        onchange="updateCities()"
+                    >
+                        <option value="">
+                            Select State
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="dropdown-group">
+
+                    <label class="dropdown-label">
+                        City
+                    </label>
+
+                    <select
+                        id="citySelect"
+                        class="dropdown-select"
+                        onchange="updateAreas()"
+                        disabled
+                    >
+                        <option value="">
+                            Select City
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="dropdown-group">
+
+                    <label class="dropdown-label">
+                        Area
+                    </label>
+
+                    <select
+                        id="areaSelect"
+                        class="dropdown-select"
+                        disabled
+                    >
+                        <option value="">
+                            Select Area
+                        </option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="location-info"
+                id="locationInfo"
+            >
+                📌 Please select your location to see
+                available restaurants and accurate
+                delivery times
+            </div>
+
+        </div>
+
+
+        <!-- ================================
+             FOOD SEARCH
+             ================================ -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="foodSearch"
+                class="search-input"
+                placeholder="Search any food or drink..."
+                autocomplete="off"
+            />
+
+
+            <button
+                class="search-btn"
+                onclick="searchFood()"
+            >
+                🔍 Compare
+            </button>
+
+
+            <!-- FOOD SUGGESTIONS -->
+
+            <div
+                id="foodSuggestions"
+                class="food-suggestions"
+            ></div>
+
+        </div>
+
+
+        <!-- ================================
+             QUICK SEARCH
+             ================================ -->
+
+        <div class="suggestions">
+
+            <span
+                style="color: #666; font-weight: 600;"
+            >
+                Try searching:
+            </span>
+
+
+            <div
+                class="suggestion-chip"
+                onclick="quickSearch('Biryani')"
+            >
+                Biryani
+            </div>
+
+
+            <div
+                class="suggestion-chip"
+                onclick="quickSearch('Pizza')"
+            >
+                Pizza
+            </div>
+
+
+            <div
+                class="suggestion-chip"
+                onclick="quickSearch('Burger')"
+            >
+                Burger
+            </div>
+
+
+            <div
+                class="suggestion-chip"
+                onclick="quickSearch('Masala Dosa')"
+            >
+                Masala Dosa
+            </div>
+
+
+            <div
+                class="suggestion-chip"
+                onclick="quickSearch('Cold Coffee')"
+            >
+                Cold Coffee
+            </div>
+
+
+            <div
+                class="suggestion-chip"
+                onclick="quickSearch('Cheesecake')"
+            >
+                Cheesecake
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================
+         RESULTS
+         ================================ -->
+
+    <div id="results"></div>
+
+</div>
+
+
+<!-- ================================
+     BOTTOM NAVIGATION
+     ================================ -->
+
+<nav class="bottom-nav">
+
+    <button
+        class="nav-item active"
+        onclick="goHome()"
+    >
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="goOrders()"
+    >
+        <span class="nav-icon">📋</span>
+        <span>Orders</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="goSaved()"
+    >
+        <span class="nav-icon">❤️</span>
+        <span>Saved</span>
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="goProfile()"
+    >
+        <span class="nav-icon">👤</span>
+        <span>Profile</span>
+    </button>
+
+</nav>
+
+
+<!-- ================================
+     JAVASCRIPT
+     ================================ -->
+
+<script src="food.js"></script>
+
+
+</body>
+</html>

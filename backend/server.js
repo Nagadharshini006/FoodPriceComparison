@@ -12,7 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+
 
 function tokenFor(user) {
   return jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
